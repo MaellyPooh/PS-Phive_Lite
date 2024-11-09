@@ -1,0 +1,26 @@
+<html manifest="../menu.cache">
+<head>
+<script>
+function DLProgress(e){
+	parent.ScrOverlay.style.display="block";
+	Percent=(Math.round(e.loaded / e.total * 100));
+	parent.cacheUPDtxt.innerHTML="Installing offline cache...";
+	parent.CacheBar2.style.width=Percent + '%';
+}
+function DisplayCacheProgress(){
+	setTimeout(function(){parent.cacheUPDtxt.innerHTML="Cache installed successfully";},1000);
+	setTimeout(function(){
+	 parent.CacheProgress.style.display="none";
+	 parent.CacheProgress2.style.display="none";
+	 parent.cacheUPDtxt.innerHTML="Reopen the browser to continue...<br>(Or setup your ESP32S2 connection now if you use one)";},2500);
+	}
+	window.applicationCache.addEventListener("progress",DLProgress,false);
+	window.applicationCache.oncached=function(e){DisplayCacheProgress();};
+	window.applicationCache.onupdateready=function(e){DisplayCacheProgress();};
+	window.applicationCache.onerror=function(e){parent.cacheUPDtxt.innerHTML="Error installing menu cache";
+};
+</script>
+</head>
+<body>
+</body>
+</html>

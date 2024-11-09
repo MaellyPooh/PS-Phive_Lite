@@ -1,0 +1,538 @@
+<html>
+<head>
+<meta charset="UTF-8">
+<title>PS-Phive! Lite</title>
+<link rel="stylesheet prefetch" href="menu.css">
+
+<script>
+UA=navigator.userAgent.substring(navigator.userAgent.indexOf("6.72 (") + 28,navigator.userAgent.indexOf(") Apple"));
+if (UA=="layStation 4/9.00")UA="9.00";
+//Check GoldHEN BinLoader Server Status
+function GHBLScheck(){
+ var req = new XMLHttpRequest();
+ req.open("GET", "http://127.0.0.1:9090/status");
+ req.send();
+ req.onload = function(){sessionStorage.ghbls = "yes";GHBLS.innerHTML="GoldHEN BinLoader Server";localStorage.kexStatus = "good";};
+ req.onerror = function(){sessionStorage.ghbls = "no";GHBLS.innerHTML="Webkit";};
+}
+GHBLScheck();
+</script>
+</head>
+<body>
+
+<div id=PassFail>Detected Firmware Version: v<span id=FWver></span><br>Exploit Stats: Pass = <span id=passCounter></span>&nbsp;&nbsp;:&nbsp;&nbsp;Fail = <span id=failCounter></span><br>Auto Load GoldHEN: <span id=aGHyn></span><br>Payload Method: <span id=GHBLS></span></div>
+
+<div id=ScrOverlay class=cacheUPDbg><pre id=cacheUPDtxt class=cacheUPDtext></pre><div id=CacheProgress><div id=CacheBar></div></div></div>
+<div id=Loader class=Loader></div>
+
+<div id=MenuSelection onmouseenter=SetMenuButton()>
+<div class=but2> Main </div>&nbsp;&nbsp;
+<div class=but0> Tools </div>&nbsp;&nbsp;
+<div class=but0> Payloads </div>&nbsp;&nbsp;
+<div class=but0> Dumper </div>&nbsp;&nbsp;
+<div class=but0> Settings </div>
+</div>
+
+<div id=MenuContainer class=MenuContainer onclick=LoadPL()>
+
+<div id=MainMenu class=MenuClass style=display:block>
+ <div PL-Title="Main Menu"     								PL-Bin="INFO"               				PL-Ver="Menu Info:"                              				PL-Desc="Contains payloads to exploit and run homebrew on your 9.00 firmware PS4. <br><br>Other payloads frequently used can also be found here like FTP and Bin Loader." class="Box Icon">&#xf30f;</div
+><div PL-Title="GoldHEN"       								PL-Bin="pl_GoldHEN.bin"        				PL-Ver="By SiSTRo"                               				PL-Desc="Homebrew Enabler for PlayStation 4. <br><br>Adds support for PSVR, Ext HDD, Remote PKG Install, Rest Mode and Plugins. Enables Debug Settings, UART, a Cheat Menu and a FTP & BinLoader Server. <br><br><b>* Press R1 to change version <br>* Press L1 to set 'AutoLoad after Exploit' ON/OFF </b>" class="Box Icon"><img src="img/hen.svg"></div
+><div PL-Title="Linux Loader"								PL-Bin="pl_Linux2GB.bin"		    		PL-Ver="2GB - By PSXITA Team & Mircoho"							PL-Desc="Linux Loader payload to run Linux on your PS4.<br><br>Files for installation: initramfs.cpio.gz, bzImage and psxitarch.tar.* <br><br>* Latest GoldHEN BinLoader Server Required! <br><b>* Press R1 to change VRAM/RAM sizes <br>* Press L1 to show 'Southbridge Type' </b>" 
+	  PL2-Title="Who's That SouthBridge" 					PL2-Bin="pl_WTSB.bin"	    				PL2-Ver="v1.0" 			 						 				PL-Desc="Payload that shows your southbridge chip type.<br><br>This can be Aeolia, Belize or Baikal. Grab the correct bzimage and initramfs files accordingly." class="Box Icon"><img src="img/linux.svg"></div
+><div PL-Title="Bin Loader"    								PL-Bin="BINLOADER"          				PL-Ver="v1.0 - By Specter"                       				PL-Desc="Loads a bin or elf file sent to the PS4 IP address on port 9020.<br><br>Netcat or Netcat GUI is recommended to send the files to the PS4." class="Box Icon">&#xf019;</div
+><div PL-Title="FTP Server"    								PL-Bin="pl_FTP.bin"         				PL-Ver="v1.08b - By hippie68"                    				PL-Desc="A full access FTP server for the PS4.<br><br>Connect your FTP client to: <br>- IP address of PS4. <br>- Port number 1337.<br><br>Improved version that runs on Linux!" class="Box Icon"><img src="img/ftp.svg"></div
+></div>
+
+<div id=ToolsMenu class=MenuClass style=display:none>
+ <div PL-Title="Tools Menu"    								PL-Bin="INFO"              					PL-Ver="Menu Info:"                                        		PL-Desc="Contains tools to help with homebrew development, use trainers and move your apps to and external drive." class="Box Icon">&#xf30f;</div
+><div PL-Title="Web RTE"       								PL-Bin="pl_WebRTE.bin"      				PL-Ver="v1.0 - By PS4 Trainer"		  							PL-Desc="Enables Web Runtime Environment.<br><br>After running the payload, go to ps4trainer.com/Trainer/index.html on any device to use trainers." class="Box Icon">&#xf0ac;</div
+><div PL-Title="PS4 Debug"     								PL-Bin="pl_PS4debug.bin"    				PL-Ver="v1.1.16 - Original by golden / Updated by CTN & SiSTRo" PL-Desc="Debugger for the PlayStation 4.<br><br>Use with Debug Watch, SaveMounter, Profile Activator, PS4 Cheater, Reaper, Multitrainer, etc." class="Box Icon">&#xf188;</div
+><div PL-Title="Orbis Toolbox" 								PL-Bin="pl_OrbisTB.bin"     				PL-Ver="v1190 Alpha - By OSM-Made"                         		PL-Desc="Loads Orbis Toolbox.<br><br>A modification of the playstation UI to help with launching and developing homebrew..." class="Box Icon">&#xf0b1;</div
+><div PL-Title="APP to USB"    								PL-Bin="pl_App2usb.bin"     				PL-Ver="v5.0 - Original by Stooged" 							PL-Desc="Moves apps to an external USB drive.<br><br>Installed games from your internal HDD will move to an external exFAT formatted USB drive. Configuration file goes in /PS4/app2usb.ini of your USB.<br><br><b>*WARNING* </b>After rebuilding the database, all moved apps will have to be reinstall again!" class="Box Icon">&#xf0a0;</div
+></div>
+
+<div id=PayloadsMenu class=MenuClass style=display:none>
+ <div PL-Title="Payloads Menu"      						PL-Bin="INFO"                  				PL-Ver="Menu Info:"                  							PL-Desc="Contains payloads to do various tasks and change things on your PS4." class="Box Icon">&#xf30f;</div
+><div PL-Title="Database Backup" 							PL-Bin="pl_DBbackup.bin" 	   				PL-Ver="v1.1 - By Tribb"										PL-Desc="Create a backup of important database files.<br><br>A backup of your app databases and web cache will be created and saved internally on your PS4 drive (and to your USB if there is one)." class="Box Icon">&#xf1c0;</div
+><div PL-Title="Database Restore" 							PL-Bin="pl_DBrestore.bin" 	   				PL-Ver="v1.0 - By Leeful"										PL-Desc="Restore a backup of the database files created by 'Database Backup'<br><br>The backup will be restored from either the Internal HDD, or from USB.<br><br><b>*WARNING* </b>If a USB drive is inserted, the backup on the USB will be the one used to restore." class="Box Icon">&#xf2ea;</div
+><div PL-Title="History Blocker" 							PL-Bin="pl_HistoryBlocker.bin" 				PL-Ver="v2.0 - Original by Stooged"  							PL-Desc="Disable the auto opening of the last page used in the PS4 WebBrowser.<br><br>* Run the payload again to disable this feature." class="Box Icon">&#xf017;</div
+><div PL-Title="Disable Updates" 							PL-Bin="pl_UpdatesDisable.bin" 				PL-Ver="v1.0 - By Al Azif"           							PL-Desc="Disables Software System Updates. <br><br>Creates dummy files in the PS4 update folder to prevent the download of unwanted system updates. It also deletes any existing updates if they already exist.<br><br>* You only have to run this once!" class="Box Icon">&#xf30d;</div
+><div PL-Title="Enable Updates"  							PL-Bin="pl_UpdatesEnable.bin"  				PL-Ver="v1.0 - By Al Azif"           							PL-Desc="Enables Software System Updates. <br><br>Removes the dummy files in the PS4 update folder to enable the download of updates again.<br><br>Run this if you have previously disabled updates and wish to update your console." class="Box Icon">&#xf13e;</div
+><div PL-Title="Permanent UART"								PL-Bin="pl_PermanentUART.bin"  				PL-Ver="v1.2 - Original by JTAG7371" 							PL-Desc="Enables permanent Universal Asynchronous Receiver/Transmitter.<br><br>Once the payload has run, reboot your console. <br><br>* UART will be enable until you update again." class="Box Icon">&#xf2db;</div
+><div PL-Title="Exit IDU mode"								PL-Bin="pl_ExitIDU.bin"		   				PL-Ver="v1.0 - By Al Azif"           							PL-Desc="Exits Individual Display Unit mode (Kiosk mode).<br><br>PS4 should be turn off when its done, just hold the power button after the screen turns off.<br><br>When you turn it back on you should be out of IDU mode." class="Box Icon">&#xf70c;</div
+></div>
+
+<div id=DumperMenu class=MenuClass style=display:none>
+ <div PL-Title="Dumper Menu"           						PL-Bin="INFO"             					PL-Ver="Menu Info:"                                       		PL-Desc="Contains payloads to dump your games from your PS4 so that they can be build as fake packages that you can install easilly.<br><br>You can also dump your kernel and modules or backup package files." class="Box Icon">&#xf30f;</div
+><div PL-Title="Dump Game & Update"         				PL-Bin="pl_DumperGU.bin"	  				PL-Ver="v1.9 - Original by xVortex" 					  		PL-Desc="Dumps the app and its update to a USB drive. <br><br>This payload will dump your game or app and its update to your USB drive to be able to create FPKG files.<br><br>* Run the app you want to dump first, no config file needed!" class="Box Icon">&#xf802;</div
+><div PL-Title="Dump Game Only"             				PL-Bin="pl_DumperG.bin"   					PL-Ver="v1.9 - Original by xVortex" 					  		PL-Desc="Dumps the app to a USB drive. <br><br>This payload will dump just your game or app to your USB drive to be able to create FPKG files.<br><br>* Run the app you want to dump first, no config file needed!" class="Box Icon">&#xf07b;</div
+><div PL-Title="Dump Update Only"           				PL-Bin="pl_DumperU.bin"   					PL-Ver="v1.9 - Original by xVortex" 					  		PL-Desc="Dumps the app's update to a USB drive. <br><br>This payload will dump just your game or app update to your USB drive to be able to create FPKG files.<br><br>* Run the app you want to dump first, no config file needed!" class="Box Icon">&#xf07b;</div
+><div PL-Title="Dump & Merge Game + Update" 				PL-Bin="pl_DumperM.bin"   					PL-Ver="v1.9 - Original by xVortex" 					  		PL-Desc="Dumps and merges the app and its update to a USB drive.<br><br>This payload will dump your game and game update (if there is one) and merge them into a folder on your USB drive to create FPKG files.<br><br>* Run the app you want to dump first, no config file needed!" class="Box Icon">&#xf49c;</div
+><div PL-Title="Dumper AIO" 								PL-Bin="pl_DumperVTX.bin"   				PL-Ver="v1.8 - Original by xVortex" 					  		PL-Desc="Dumps an app to a USB drive. <br><br>It can dump an app, its update and all available dlcs. <br><br>This payload is configurable and requires dumper.cfg file in root of USB! <br><br>* Run the app you want to dump first." class="Box Icon">&#xf51f;</div
+><div PL-Title="Backup Package files"   					PL-Bin="pl_PKGBackup.bin" 					PL-Ver="v1.2 - Base on Game Dumper / Modded By Kameleon"  		PL-Desc="Backups PKG files to External HDD.<br><br>By default, this payload will backup the game, update and all available dlcs of the running app to your USB drive. <br><br>You can add a /PS4/config.ini file in your USB drive for further configuration." class="Box Icon">&#xf49a;</div
+><div PL-Title="Kernel Dumper"   							PL-Bin="pl_KernelDumper.bin"    			PL-Ver="v1.0 - Original by Eversion"					  		PL-Desc="Dump a copy of your kernel to your USB drive.<br><br>Your kernel will be dumped to KernelDump.bin on your USB drive." class="Box Icon">&#xf56e;</div
+><div PL-Title="Module Dumper"   							PL-Bin="pl_ModuleDumper.bin"    			PL-Ver="v1.0 - Original by SocraticBliss"				  		PL-Desc="Payload for dumping all of the PS4 modules in one go.<br><br>Your modules will be dumped to a 900 folder on your USB drive." class="Box Icon">&#xf828;</div
+></div>
+
+<div id=SettingsMenu class=MenuClass style=display:none>
+ <div PL-Title="Settings Menu"								PL-Bin="INFO"               				PL-Ver="Menu Info:" 									   		PL-Desc="Changes your ESP, ASLR and Fan Temp configuration. " class="Box Icon">&#xf30f;</div
+><div PL-Title="Set Temperature" 	  						PL-Bin="pl_Fan75º.bin" 						PL-Ver="Set to 75º - By ethylamine"                     		PL-Desc="Payload to increase fan speed based on temperature threshold.<br><br>The default value for all PlayStation 4 models is 80ºC. <br><br>* Setting stays in effect as long as the power cable is still plugged into your PS4. <br><b>* Press R1 to change Temperature </b>" class="Box Icon">&#xf768;</div
+><div PL-Title="Disable ASLR" 								PL-Bin="pl_ASLRdisable.bin" 				PL-Ver="v1.0 - By Al Azif"                                 		PL-Desc="Disables the Address Space Layout Randomization. <br><br>Makes working with memory easier/repeatable. Useful if you are using an older version of GoldHEN that does not disable ASLR by default. <br><br><b>* Press L1 to set this to Auto Run after GoldHEN </b>" class="Box Icon">&#xf5fe;</div
+><div PL-Title="ReEnable ASLR"								PL-Bin="pl_ASLRenable.bin"  				PL-Ver="v1.0 - By Leeful"                                  		PL-Desc="Enables the Address Space Layout Randomization<br><br>Useful if you want to keep ASLR enabled while using GoldHEN. <br><br>*Incompatible with cheats. <br><b>* Press L1 to set this to Auto Run after GoldHEN </b>" class="Box Icon">&#xf5ff;</div
+><div PL-Title="ESP Settings" 								PL-Bin="ESPCONFIG"          				PL-Ver="v1.0 - Original by Stooged / Mod by Leeful"        		PL-Desc="Opens ESP32-S2 configuration settings. <br><br>Change the ESP device settings, like the USB wait time for the kernel exploit. You can connect your home WiFi network to have access to the internet (with Al Azif's DNS settings) instead of connecting directly to the ESP's network." class="Box Icon">&#xf013;</div
+></div>
+
+</div>
+
+<div id=navFix1 tabindex="6"></div>
+<div id=Title class=Title></div>
+<div id=InfoBox style=display:none><div id=InfoTitle></div><div id=InfoVerAuth></div><div id=InfoDesc></div></div>
+<div id=FanTemp class=Info1></div>
+
+<select class="multiOPTIONS" id="multiGH" disabled="true" onChange="setGHver()" style="position:fixed;bottom:0px;opacity:0;">
+<option value="">Select A Version From The List Below:</option>
+<option value="v2.4b18">v2.4b18 - 28 Oct 2024  * Latest</option>
+<option value="v2.3">v2.3 - 24 Dec 2022 (Added Plugins)  * Latest Stable</option>
+<option value="v2.2.4">v2.2.4 - 07 Sep 2022 (Added Cheat Menu)</option>
+<option value="v2.1.2">v2.1.2 - 18 Feb 2022 (Added Klog Server)  * ASLR not disable</option>
+</select>
+
+<select class="multiOPTIONS" id="autoGH" disabled="true" onChange="setAutoGH()" style="position:fixed;bottom:0px;opacity:0;">
+<option value="">Select An Option Below:</option>
+<option value="ON">Auto Load GoldHEN after Kernel Exploit = "ON"</option>
+<option value="OFF">Auto Load GoldHEN after Kernel Exploit = "OFF"</option>
+</select>
+
+<select class="multiOPTIONS" id="autoASLR" disabled="true" onChange="setASLR()" style="position:fixed;bottom:0px;opacity:0;">
+<option value="ON">AutoRun 'Disable ASLR' payload after GoldHEN</option>
+<option value="OFF">AutoRun 'ReEnable ASLR' payload after GoldHEN</option>
+<option value="DISABLED">Do not AutoRun any ASLR payload after GoldHEN</option>
+</select>
+
+<select class="multiOPTIONS" id="multiLinux" disabled="true" onChange="setLinuxver()" style="position:fixed;bottom:0px;opacity:0;">
+<option value="">Select A Version From The List Below:</option>
+<option value="1GB">PS4: 1GB VRAM & 7GB RAM</option>
+<option value="2GB">PS4: 2GB VRAM & 6GB RAM (Recommended)</option>
+<option value="3GB">PS4: 3GB VRAM & 5GB RAM</option>
+<option value="4GB">PS4: 4GB VRAM & 4GB RAM</option>
+<option value="1GB-Pro">PS4 Pro: 1GB VRAM & 7GB RAM</option>
+<option value="2GB-Pro">PS4 Pro: 2GB VRAM & 6GB RAM (Recommended)</option>
+<option value="3GB-Pro">PS4 Pro: 3GB VRAM & 5GB RAM</option>
+<option value="4GB-Pro">PS4 Pro: 4GB VRAM & 4GB RAM</option>
+</select>
+
+<select class="multiOPTIONS" id="multiFan" disabled="true" onChange="setFanver()" style="position:fixed;bottom:0px;opacity:0;">
+<option value="No version selected">Select An Option From The List Below:</option>
+<option value="60ºC">Max temperature 60ºC</option>
+<option value="65ºC">Max temperature 65ºC</option>
+<option value="70ºC">Max temperature 70ºC</option>
+<option value="75ºC">Max temperature 75ºC</option>
+<option value="80ºC">Max temperature 80ºC</option>
+</select>
+
+<script>
+var SS=sessionStorage;var LS=localStorage;var CC=createCookie;var RC=readCookie;
+
+function createCookie(name,value,days){if(days){var date=new Date();date.setTime(date.getTime()+(days*24*60*60*1000));var expires="; expires="+date.toGMTString();}else expires="";document.cookie=name+"="+value+expires;}
+function readCookie(name){var nameEQ=name+"=";var ca=document.cookie.split(';');for(var i=0;i<ca.length;i++){var c=ca[i];while(c.charAt(0)==' ') c=c.substring(1,c.length);if(c.indexOf(nameEQ)==0) return c.substring(nameEQ.length,c.length);} return null;}
+
+if (sessionStorage.length == 0) {
+ MenuNumber=1;
+ SS.MenuNumber=MenuNumber;
+ SS.ItemNum=2;
+ SS.MenuPos= -40;
+ MenuContainer.children[MenuNumber-1].setAttribute('id','TargetMenu');
+ TargetMenu.children[SS.ItemNum-1].className="SelectedItem Icon";
+ MenuStatus=1;
+ Loaded=0;
+ SS.ThisIsFanControl=0;
+ SS.ThisIsFwSpoofer=0;
+}
+else {
+MainMenu.children[1].setAttribute('PL-Ver', LS.GHver+' By SiSTRo');
+MainMenu.children[1].setAttribute('PL-Bin', 'pl_GoldHEN'+LS.GHver+'.bin');
+MenuNumber=SS.MenuNumber;
+MenuContainer.children[MenuNumber-1].setAttribute('id','TargetMenu');
+TargetMenu.children[SS.ItemNum-1].className="SelectedItem Icon";
+MenuStatus=1;
+Loaded=0;
+SS.ThisIsFanControl=0;
+SS.ThisIsFwSpoofer=0;
+}
+
+FWver.innerHTML=UA;
+aGHyn.innerHTML = LS.autoGH;
+
+if (localStorage.kexStatus == "good" && localStorage.kexUnsure == "unsure"){
+ localStorage.passcount = ++localStorage.passcount;
+ localStorage.failcount = --localStorage.failcount;
+ passCounter.innerHTML=localStorage.passcount;
+ failCounter.innerHTML=localStorage.failcount;
+ localStorage.kexUnsure = "kexgood";
+}
+else if (localStorage.kexStatus == "good"){
+  passCounter.innerHTML=localStorage.passcount;
+  failCounter.innerHTML=localStorage.failcount;
+}
+else if (localStorage.kexStatus == "started"){
+ localStorage.passcount = ++localStorage.passcount;
+ localStorage.failcount = --localStorage.failcount;
+ passCounter.innerHTML=localStorage.passcount;
+ failCounter.innerHTML=localStorage.failcount;
+ localStorage.kexStatus = "done";
+}
+
+//Functions to open selection menu
+function openAutoGH(){
+ document.getElementById('autoGH').disabled = false;
+ var evt = autoGH.ownerDocument.createEvent('MouseEvents');
+ evt.initMouseEvent('mousedown',{bubbles:true});
+ autoGH.dispatchEvent(evt);
+ document.getElementById('autoGH').disabled = true;
+}
+function openAutoASLR(){
+ document.getElementById('autoASLR').disabled = false;
+ document.getElementById('autoASLR').value = LS.aslr;
+ var evt = autoASLR.ownerDocument.createEvent('MouseEvents');
+ evt.initMouseEvent('mousedown',{bubbles:true});
+ autoASLR.dispatchEvent(evt);
+ document.getElementById('autoASLR').disabled = true;
+}
+function openverSelection(){
+ if (TargetMenu.children[SS.ItemNum-1].getAttribute('PL-Title').includes('GoldHEN')){
+  document.getElementById('multiGH').disabled = false;
+  var evt = multiGH.ownerDocument.createEvent('MouseEvents');
+  evt.initMouseEvent('mousedown',{bubbles:true});
+  multiGH.dispatchEvent(evt);
+  document.getElementById('multiGH').disabled = true;
+ }
+ if (TargetMenu.children[SS.ItemNum-1].getAttribute('PL-Title').includes('Linux Loader')) {
+  document.getElementById('multiLinux').disabled = false;
+  var evt = multiLinux.ownerDocument.createEvent('MouseEvents');
+  evt.initMouseEvent('mousedown',{bubbles:true});
+  multiLinux.dispatchEvent(evt);
+  document.getElementById('multiLinux').disabled = true;
+ } 
+ if (TargetMenu.children[SS.ItemNum-1].getAttribute('PL-Title').includes('Set Temperature')){
+  document.getElementById('multiFan').disabled = false;
+  var evt = multiFan.ownerDocument.createEvent('MouseEvents');
+  evt.initMouseEvent('mousedown',{bubbles:true});
+  multiFan.dispatchEvent(evt);
+  document.getElementById('multiFan').disabled = true;
+ }
+}
+
+//Functions to set selected option
+function setAutoGH(){
+ LS.autoGH = autoGH.value;
+ aGHyn.innerHTML=LS.autoGH;
+}
+function setASLR(){
+ LS.aslr = autoASLR.value;
+}
+function setGHver(){
+ LS.GHver = multiGH.value;
+ updatever();
+}
+function setLinuxver(){
+ LS.Linuxver = multiLinux.value;
+ updatever();
+}
+function setFanver(){
+ LS.Fanver = multiFan.value;
+ updatever();
+}
+function updatever(){
+ if (TargetMenu.children[SS.ItemNum-1].getAttribute('PL-Title').includes('GoldHEN')){
+  TargetMenu.children[SS.ItemNum-1].setAttribute('PL-Ver', LS.GHver+' By SiSTRo');
+  TargetMenu.children[SS.ItemNum-1].setAttribute('PL-Bin', 'pl_GoldHEN'+LS.GHver+'.bin');
+  IBT(TargetMenu.children[SS.ItemNum-1].getAttribute('PL-Title'));IBV(TargetMenu.children[SS.ItemNum-1].getAttribute('PL-Ver'));
+ }
+ if (TargetMenu.children[SS.ItemNum-1].getAttribute('PL-Title').includes('Linux Loader')){
+  TargetMenu.children[SS.ItemNum-1].setAttribute('PL-Ver', LS.Linuxver+' - By PSXITA Team & Mircoho');
+  TargetMenu.children[SS.ItemNum-1].setAttribute('PL-Bin', 'pl_Linux'+LS.Linuxver+'.bin');
+  IBT(TargetMenu.children[SS.ItemNum-1].getAttribute('PL-Title'));IBV(TargetMenu.children[SS.ItemNum-1].getAttribute('PL-Ver'));
+ }
+ if (TargetMenu.children[SS.ItemNum-1].getAttribute('PL-Title').includes('Set Temperature')){
+  TargetMenu.children[SS.ItemNum-1].setAttribute('PL-Ver', 'Set to '+LS.Fanver+' - By ethylamine');
+  TargetMenu.children[SS.ItemNum-1].setAttribute('PL-Bin', 'pl_Fan'+LS.Fanver+'.bin');
+  IBT(TargetMenu.children[SS.ItemNum-1].getAttribute('PL-Title'));IBV(TargetMenu.children[SS.ItemNum-1].getAttribute('PL-Ver'));
+ }
+}
+
+//Functions to update menu elements
+function ChangeText(text){Title.innerHTML = text;}
+function ChangeInfoBoxTitle(text){InfoTitle.innerHTML = text;}
+function ChangeInfoBoxVer(text){InfoVerAuth.innerHTML = text;}
+function ChangeInfoBoxDesc(text){InfoDesc.innerHTML = text;}
+IBT = ChangeInfoBoxTitle;IBV = ChangeInfoBoxVer;IBD = ChangeInfoBoxDesc;
+
+function UpdateMenu(){
+ setTimeout(function(){
+  if (MenuStatus==1){TargetMenu.children[SS.ItemNum-1].className="SelectedItem Icon";}
+  else {TargetMenu.children[SS.ItemNum-1].className="SelectedItem2 Icon";}
+ },0);
+
+ if (MenuStatus == 1){TargetMenu.children[SS.ItemNum-1].className = "SelectedItemAnim Icon";
+ TargetMenu.style.left=SS.MenuPos+'px';}
+
+ UpdateTitle();
+ ShowInfo();
+
+ var x = TargetMenu.childElementCount;for (i=0; i<x; i++){TargetMenu.children[i].className="Box Icon";}
+}
+
+function UpdateSelectMenu(){
+ var x=TargetMenu.childElementCount;for(i=0;i<x;i++){TargetMenu.children[i].className="Box Icon";}
+ TargetMenu.children[SS.ItemNum-1].className="SelectedItem2 Icon";
+ ShowMenuInfo();SS.MenuNumber=MenuNumber;
+}
+
+function ShowMenuInfo(){
+
+ InfoTitle.className = "InfoTitleAnim";
+ setTimeout(function(){IBT(TargetMenu.children[0].getAttribute('PL-Title'));},0);
+ setTimeout(function(){InfoTitle.className="InfoTitle";},100); 
+ 
+ InfoVerAuth.className = "InfoVerAuthAnim";
+ setTimeout(function(){IBV(TargetMenu.children[0].getAttribute('PL-Ver'));},0);
+ setTimeout(function(){InfoVerAuth.className="InfoVerAuth";},100); 
+ 
+ InfoDesc.className = "InfoDescAnim";
+ setTimeout(function(){IBD(TargetMenu.children[0].getAttribute('PL-Desc'));},0);
+ setTimeout(function(){InfoDesc.className="InfoDesc";},0); 
+}
+
+function UpdateTitle(){
+ Title.className = "TitleAnim";
+ setTimeout(function(){ChangeText(TargetMenu.children[SS.ItemNum-1].getAttribute('PL-Title'));},100);
+ setTimeout(function(){Title.className="Title";},100);
+ setTimeout(function(){if (TargetMenu.children[SS.ItemNum-1].getAttribute('PL-Title')=='Fan Control'){ShowFanTemp();}else{HideFanTemp();}},100);
+}
+
+function ShowInfo(){
+ InfoBox.style.display='block';
+ 
+ InfoTitle.className = "InfoTitleAnim";
+ setTimeout(function(){IBT(TargetMenu.children[SS.ItemNum-1].getAttribute('PL-Title'));},0);
+ setTimeout(function(){InfoTitle.className="InfoTitle";},100); 
+ 
+ InfoVerAuth.className = "InfoVerAuthAnim";
+ setTimeout(function(){IBV(TargetMenu.children[SS.ItemNum-1].getAttribute('PL-Ver'));},0);
+ setTimeout(function(){InfoVerAuth.className="InfoVerAuth";},100); 
+ 
+ InfoDesc.className = "InfoDescAnim";
+ setTimeout(function(){IBD(TargetMenu.children[SS.ItemNum-1].getAttribute('PL-Desc'));},0);
+ setTimeout(function(){InfoDesc.className="InfoDesc";},100); 
+}
+ShowInfo();
+
+function HideTitle(){
+ Title.className = "NoTitle";
+}
+
+function allset2(){
+ ChangeText(TargetMenu.children[SS.ItemNum-1].getAttribute('PL-Title')+" Loading...");
+ setTimeout(function(){ChangeText(TargetMenu.children[SS.ItemNum-1].getAttribute('PL-Title')+" Loaded");},4000); 
+}
+
+//Load Payload with GoldHEN BinLoader Server
+function LoadFromGHBLS(PLfile){
+ var req=new XMLHttpRequest();
+ req.open("GET","http://127.0.0.1:9090/status");
+ req.send();
+ req.onerror=function(){alert("Cannot load payload because the BinLoader Server is not running");return;};
+ req.onload=function(){
+  var responseJson=JSON.parse(req.responseText);
+  if(responseJson.status=="ready"){
+   getPayload(PLfile,function(req){if((req.status===200||req.status===304)&&req.response){sendPayload("http://127.0.0.1:9090",req.response);}});
+  }
+  else{alert("Cannot load payload because the BinLoader Server is busy");return;}
+ };
+ var getPayload=function(pl,onLoadEndCallback){
+  var req=new XMLHttpRequest();
+  req.open('GET',pl);
+  req.send();
+  req.responseType="arraybuffer";
+  req.onload=function(event){if(onLoadEndCallback)onLoadEndCallback(req,event);};
+ };
+ var sendPayload=function(url,data,onLoadEndCallback){
+  var req=new XMLHttpRequest();
+  req.open("POST",url,true);
+  req.send(data);req.onload=function(event){allset2();if(onLoadEndCallback)onLoadEndCallback(req,event);};
+ };
+}
+
+//Load Payload 
+function LoadPL(){
+ PLfile=TargetMenu.children[SS.ItemNum-1].getAttribute('PL-Bin');
+ if (sessionStorage.aslr == "yes") PLfile="pl_ASLRdisable.bin";
+ if (sessionStorage.aslr == "no") PLfile="pl_ASLRenable.bin";
+ if(sessionStorage.ghbls=="yes" && TargetMenu.children[SS.ItemNum-1].getAttribute('PL-Bin')!="ESPCONFIG"){
+  LoadFromGHBLS(PLfile);
+ }
+ else{
+  if (Loaded==0 && TargetMenu.children[SS.ItemNum-1].getAttribute('PL-Bin')!="INFO"){
+   Payload=TargetMenu.children[SS.ItemNum-1].getAttribute('PL-Title'); 
+   if (Payload=='Bin Loader'){
+    top.runBinLoader();
+   }
+   else if (Payload=='ESP Settings'){
+    if (top.useEspIP != "not set") top.loadConfig();
+    else alert("No ESP32-S2 Device Detected!");
+   }
+   else {
+    ChangeText(TargetMenu.children[SS.ItemNum-1].getAttribute('PL-Title')+" Loading...");
+    getPL(PLfile);
+   }
+  } 
+ } 
+}
+
+//Load secondary Payload
+function LoadPL2(){
+ PLfile=TargetMenu.children[SS.ItemNum-1].getAttribute('PL2-Bin');
+ if (sessionStorage.aslr == "yes") PLfile="pl_ASLRdisable.bin";
+ if (sessionStorage.aslr == "no") PLfile="pl_ASLRenable.bin";
+ if(sessionStorage.ghbls == "yes"){
+  LoadFromGHBLS(PLfile);
+ }
+ else{
+  if (Loaded==0 && TargetMenu.children[SS.ItemNum-1].getAttribute('PL2-Bin')!="INFO"){
+   Payload=TargetMenu.children[SS.ItemNum-1].getAttribute('PL2-Title'); 
+   ChangeText(TargetMenu.children[SS.ItemNum-1].getAttribute('PL2-Title')+" Loading...");
+   getPL(PLfile);
+  } 
+ } 
+}
+
+//Function to 'Load' the payload file	
+function getPL(PLfile){
+ var req = new XMLHttpRequest();
+ req.responseType = "arraybuffer";
+ req.open('GET',PLfile);
+ req.send();
+ req.onreadystatechange = function () {
+  if (req.readyState == 4) {
+   PLD = req.response;
+   top.loadPayload(PLD);
+  }
+ };
+}
+
+function PLdone(){
+ if (TargetMenu.children[SS.ItemNum-1].getAttribute('PL-Title').includes('GoldHEN')){
+  ChangeText(TargetMenu.children[SS.ItemNum-1].getAttribute('PL-Title')+" Loading...");
+  setTimeout(function(){ChangeText(TargetMenu.children[SS.ItemNum-1].getAttribute('PL-Title')+" Loaded");},1500);
+  setTimeout(GHBLScheck,2000);
+  if (localStorage.aslr == "ON" && sessionStorage.aslr == null)setTimeout(function(){sessionStorage.aslr = "yes"; LoadPL();},3500);
+  if (localStorage.aslr == "OFF" && sessionStorage.aslr == null)setTimeout(function(){sessionStorage.aslr = "no"; LoadPL();},3500);
+ }
+ else {
+  ChangeText(TargetMenu.children[SS.ItemNum-1].getAttribute('PL-Title')+" Loading...");
+  setTimeout(function(){ChangeText(TargetMenu.children[SS.ItemNum-1].getAttribute('PL-Title')+" Loaded");},1500); 
+ }
+}
+
+function HideLoaderBox(){
+ Loaded='1'; setTimeout(function(){var x=document.querySelectorAll(".SelectedItem");var i;for(i=0;i < x.length;i++){x[i].className="InfoIcon Icon";}},1500);
+}
+
+function SelectionMenuOFF(){
+ var x=MenuSelection.childElementCount;for(i=0;i<x;i++){MenuSelection.children[i].removeAttribute("tabindex");}
+}
+
+function SelectionMenuON(){
+ SelectionMenuOFF();
+ function AllON(){var x=MenuSelection.childElementCount;for(i=0;i<x;i++){MenuSelection.children[i].setAttribute("tabindex","1");}}
+ MenuSelection.children[MenuNumber-1].setAttribute("tabindex","1");
+ setTimeout(AllON,100);
+}
+
+function SetMenuButton(){
+ var x=MenuSelection.childElementCount;for(i=0;i<x;i++){MenuSelection.children[i].className="But0";}
+ MenuSelection.children[MenuNumber-1].className="But2";
+}
+
+function SwapMenuR(){
+ SS.ItemNum=2;SS.MenuPos=-40;
+ MenuNumber=parseInt(SS.MenuNumber)+1;
+ TargetMenu.style="display:none";
+ var x=MenuContainer.childElementCount;for(i=0;i<x;i++){MenuContainer.children[i].id="other";}
+ MenuContainer.children[MenuNumber-1].setAttribute('id','TargetMenu');SetMenuButton();
+ UpdateSelectMenu();TargetMenu.style="display:block";TargetMenu.style.left="-40px";
+}
+
+function SwapMenuL(){
+ SS.ItemNum=2;SS.MenuPos=-40;
+ MenuNumber=parseInt(SS.MenuNumber)-1;
+ TargetMenu.style="display:none";
+ var x=MenuContainer.childElementCount;for(i=0;i<x;i++){MenuContainer.children[i].id="other";}
+ MenuContainer.children[MenuNumber-1].setAttribute('id','TargetMenu');SetMenuButton();
+ UpdateSelectMenu();TargetMenu.style="display:block";TargetMenu.style.left="-40px";
+}
+
+var x=MenuContainer.childElementCount;for(i=0;i<x;i++){MenuContainer.children[i].style="display:none";}
+UpdateTitle();
+SetMenuButton();
+TargetMenu.style="display:block";
+TargetMenu.children[SS.ItemNum-1].className="SelectedItem Icon";
+TargetMenu.style.left=SS.MenuPos+'px';
+
+updatever();
+
+top.window.onkeyup = checkKeyUp;
+window.onkeyup = checkKeyUp;
+
+function checkKeyUp(e){
+e=e || window.event;
+     if (e.keyCode=='117' && Loaded==0) {}
+else if (e.keyCode=='116' && Loaded==0) {}
+}
+
+top.window.onkeydown = checkKeyDown;
+window.onkeydown = checkKeyDown;
+
+function checkKeyDown(e){
+e=e || window.event;
+var MoveMenu = 110; 
+ if (e.keyCode=='117' && Loaded==0) {  //R1 Button
+  if (TargetMenu.children[SS.ItemNum-1].getAttribute('PL-Title').includes('GoldHEN'))openverSelection();
+  if (TargetMenu.children[SS.ItemNum-1].getAttribute('PL-Title').includes('Linux Loader'))openverSelection();
+  if (TargetMenu.children[SS.ItemNum-1].getAttribute('PL-Title').includes('Set Temperature'))openverSelection();
+ }
+
+ else if (e.keyCode=='116' && Loaded==0) {  //L1 Button
+  if (TargetMenu.children[SS.ItemNum-1].getAttribute('PL-Title').includes('GoldHEN'))openAutoGH();
+  if (TargetMenu.children[SS.ItemNum-1].getAttribute('PL-Title').includes('ASLR'))openAutoASLR();
+  if (TargetMenu.children[SS.ItemNum-1].getAttribute('PL-Title').includes('Linux Loader'))LoadPL2();
+ }
+
+ else if (SS.ThisIsFanControl != 0 || SS.ThisIsFwSpoofer != 0){}
+
+ else if (e.keyCode=='38' && MenuStatus == 1 && Loaded==0) {  //Up button
+ MenuStatus=0;SelectionMenuON();
+ TargetMenu.children[SS.ItemNum-1].className="SelectedItem2 Icon";HideTitle();UpdateSelectMenu();ShowMenuInfo();HideFanTemp();}
+
+ else if (e.keyCode=='40' && MenuStatus == 0 && Loaded==0) {  //Down button
+ MenuStatus=1;SelectionMenuOFF();
+ TargetMenu.children[SS.ItemNum-1].className="SelectedItem Icon";UpdateTitle();ShowInfo();}
+
+ else if (e.keyCode=='37' && Loaded==0 && MenuStatus==0 && MenuNumber-1 >= 1 && MenuNumber <= MenuSelection.childElementCount){
+ SwapMenuL();}
+
+ else if (e.keyCode=='39' && Loaded==0 && MenuStatus==0 && MenuNumber-1 >= 0 && MenuNumber < MenuSelection.childElementCount){
+ SwapMenuR();}
+
+ else if (e.keyCode=='37' && MenuStatus==1 && SS.ItemNum-1 >= 1 && SS.ItemNum <= TargetMenu.childElementCount){
+ SS.MenuPos=parseInt(SS.MenuPos)+MoveMenu;SS.ItemNum=parseInt(SS.ItemNum)-1;SelectionMenuOFF();UpdateMenu();}
+
+ else if (e.keyCode=='39' && MenuStatus==1 && SS.ItemNum-1 >= 0 && SS.ItemNum < TargetMenu.childElementCount){
+ SS.MenuPos=parseInt(SS.MenuPos)-MoveMenu;SS.ItemNum=parseInt(SS.ItemNum)+1;SelectionMenuOFF();UpdateMenu();}
+
+}
+
+</script>
+</body>
+</html>

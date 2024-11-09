@@ -1,0 +1,56 @@
+CACHE MANIFEST 
+# PS-Phive! v5.0 Lite For PS4 9.00 By Leeful (Modded by Maelly)
+# 06/11/2024-12:00:00.00
+
+files\img\Icons.ttf
+files\img\ftp.svg
+files\img\hen.svg
+files\img\linux.svg
+files\menu.css
+files\menu.html
+files\pl_ASLRdisable.bin
+files\pl_ASLRenable.bin
+files\pl_App2usb.bin
+files\pl_DBbackup.bin
+files\pl_DBrestore.bin
+files\pl_DumperG.bin
+files\pl_DumperGU.bin
+files\pl_DumperM.bin
+files\pl_DumperU.bin
+files\pl_DumperVTX.bin
+files\pl_ExitIDU.bin
+files\pl_FTP.bin
+files\pl_Fan60ºC.bin
+files\pl_Fan65ºC.bin
+files\pl_Fan70ºC.bin
+files\pl_Fan75ºC.bin
+files\pl_Fan80ºC.bin
+files\pl_GoldHENv2.1.2.bin
+files\pl_GoldHENv2.2.4.bin
+files\pl_GoldHENv2.3.bin
+files\pl_GoldHENv2.4b18.bin
+files\pl_HistoryBlocker.bin
+files\pl_KernelDumper.bin
+files\pl_Linux1GB-Pro.bin
+files\pl_Linux1GB.bin
+files\pl_Linux2GB-Pro.bin
+files\pl_Linux2GB.bin
+files\pl_Linux3GB-Pro.bin
+files\pl_Linux3GB.bin
+files\pl_Linux4GB-Pro.bin
+files\pl_Linux4GB.bin
+files\pl_ModuleDumper.bin
+files\pl_OrbisTB.bin
+files\pl_PKGBackup.bin
+files\pl_PS4debug.bin
+files\pl_PermanentUART.bin
+files\pl_UpdatesDisable.bin
+files\pl_UpdatesEnable.bin
+files\pl_WTSB.bin
+files\pl_WebRTE.bin
+
+NETWORK:
+*
+
+# SETTINGS:
+# prefer-online:
